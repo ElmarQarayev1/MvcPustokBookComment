@@ -32,6 +32,7 @@
     <None Remove="Views\Account\" />
     <None Remove="Views\Book\" />
     <None Remove="Views\Basket\" />
+    <None Remove="Models\Enum\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
@@ -63,6 +64,7 @@
     <Folder Include="Views\Account\" />
     <Folder Include="Views\Book\" />
     <Folder Include="Views\Basket\" />
+    <Folder Include="Models\Enum\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.18" />

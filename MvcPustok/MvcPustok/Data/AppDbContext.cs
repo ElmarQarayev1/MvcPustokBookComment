@@ -30,8 +30,8 @@ namespace MvcPustok.Data
 		public DbSet<Setting> Settings { get; set; }
 
 		public DbSet<AppUser> AppUsers { get; set; }
+		public DbSet<BookReview> BookReviews { get; set; }
 
-      
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
