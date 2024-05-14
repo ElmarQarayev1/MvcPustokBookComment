@@ -29,12 +29,20 @@
                             <td>@review.CreatedAt.ToString("dd,MMMM,yyyy")</td>
                             <td>@review.Text</td>
                             <td>
-                                <a class="btn btn-warning" asp-action="reject" asp-route-id="@review.Id">Reject</a>
-                                <a class="btn btn-danger" asp-action="accept" asp-route-id="@review.Id">Accept</a>
+                                <form method="post"  asp-action="reject">
+                                    <input type="hidden" name="id" value="@review.Id" />
+                                    <button type="submit" class="btn btn-danger">Reject</button>
+                                </form>
+
+                                <form method="post"asp-action="accept">
+                                    <input type="hidden" name="id" value="@review.Id" />
+                                    <button type="submit" class="btn btn-success">Accept</button>
+                                </form>
                             </td>
                         </tr>
                     }
                 </tbody>
+
             </table>
         </div>
     </div>

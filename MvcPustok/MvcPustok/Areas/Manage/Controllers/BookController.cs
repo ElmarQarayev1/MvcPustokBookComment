@@ -8,6 +8,7 @@ using MvcPustok.Data;
 using MvcPustok.Helpers;
 using MvcPustok.Models;
 using System.Net;
+using MvcPustok.Models.Enum;
 
 namespace MvcPustok.Areas.Manage.Controllers
 {
@@ -242,7 +243,6 @@ namespace MvcPustok.Areas.Manage.Controllers
             var book = await _context.Books
                                      .Include(b => b.BookReviews).ThenInclude(x=>x.AppUser)
                                      .FirstOrDefaultAsync(b => b.Id == id);
-
             if (book == null)
             {
                 return RedirectToAction("notfound", "error");
@@ -250,6 +250,38 @@ namespace MvcPustok.Areas.Manage.Controllers
 
             return View(book);
         }
+        [HttpPost]
+        public async Task<IActionResult> Reject(int id)
+        {
+            var review = await _context.BookReviews.FindAsync(id);
+
+            if (review == null)
+            {
+                return RedirectToAction("notfound", "error");
+            }
+            review.Status = ReviewStatus.Rejected;
+            _context.Update(review);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("index", "book");
+        }
+        [HttpPost]
+        public async Task<IActionResult> Accept(int id)
+        {
+
+            var review = await _context.BookReviews.FindAsync(id);
+
+            if (review == null)
+            {
+                return RedirectToAction("notfound", "error");
+            }
+
+            review.Status = ReviewStatus.Accepted;
+            _context.Update(review);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("index", "book");
+        }
+
 
     }
 }

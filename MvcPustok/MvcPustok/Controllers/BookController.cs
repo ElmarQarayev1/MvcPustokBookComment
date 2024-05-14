@@ -101,23 +101,23 @@ namespace MvcPustok.Controllers
                 bookDetail.HasUserReview = true;
             }
 
-            bookDetail.TotalReviewsCount = await _context.BookReviews.CountAsync(x => x.BookId == bookId);
+            bookDetail.TotalReviewsCount = await _context.BookReviews.CountAsync(x => x.BookId == bookId && x.Status != Models.Enum.ReviewStatus.Rejected);
 
             bookDetail.Book.BookReviews = await _context.BookReviews
-                .Where(x => x.BookId == bookId)
+                .Where(x => x.BookId == bookId && x.Status != Models.Enum.ReviewStatus.Rejected)
                 .Include(r => r.AppUser)
                 .OrderByDescending(r => r.CreatedAt)
                 .Take(2)
                 .ToListAsync();
 
-            bookDetail.AvgRate = bookDetail.TotalReviewsCount > 0 ? (int)Math.Ceiling(await _context.BookReviews.Where(x => x.BookId == bookId).AverageAsync(x => x.Rate)) : 0;
+            bookDetail.AvgRate = bookDetail.TotalReviewsCount > 0 ? (int)Math.Ceiling(await _context.BookReviews.Where(x => x.BookId == bookId && x.Status != Models.Enum.ReviewStatus.Rejected).AverageAsync(x => x.Rate)) : 0;
 
             return bookDetail;
         }
         public async Task<IActionResult> GetMoreReviews(int bookId, int skip, int take)
         {
             var reviews = await _context.BookReviews
-                .Where(x => x.BookId == bookId)
+                .Where(x => x.BookId == bookId && x.Status != Models.Enum.ReviewStatus.Rejected)
                 .Include(r => r.AppUser)
                 .OrderByDescending(r => r.CreatedAt)
                 .Skip(skip)

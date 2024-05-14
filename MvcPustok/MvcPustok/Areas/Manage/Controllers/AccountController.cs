@@ -21,7 +21,6 @@ namespace MvcPustok.Areas.Manage.Controllers
             _signInManager = signInManager;
             _roleManager = roleManager;
         }
-
         public async Task<IActionResult> CreateAdmin()
         {
             AppUser appUser = new AppUser()
