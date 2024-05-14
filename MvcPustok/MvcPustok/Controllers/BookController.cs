@@ -115,6 +115,17 @@ namespace MvcPustok.Controllers
 
             return bookDetail;
         }
+        public async Task<IActionResult> GetMoreReviews(int bookId, int skip, int take)
+        {
+            var reviews = await _context.BookReviews
+                .Where(x => x.BookId == bookId)
+                .Include(r => r.AppUser)
+                .OrderByDescending(r => r.CreatedAt)
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
+            return Json(reviews);
+        }
 
 
     }

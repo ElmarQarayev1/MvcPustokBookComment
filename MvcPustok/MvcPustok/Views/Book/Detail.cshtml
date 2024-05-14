@@ -15,9 +15,8 @@
 </section>
 <main class="inner-page-sec-padding-bottom">
     <div class="container">
-        <div class="row  mb--60">xw
+        <div class="row  mb--60">        
             <div class="col-lg-5 mb--30">
-               
                 <div class="product-details-slider sb-slick-slider arrow-type-two" data-slick-setting='{
               "slidesToShow": 1,
               "arrows": false,
@@ -32,9 +31,7 @@
                             <img src="~/uploads/book/@item.Name" alt="@Model.Book.Name">
                         </div>
                     }
-
                 </div>
-              
                 <div class="mt--30 product-slider-nav sb-slick-slider arrow-type-two" data-slick-setting='{
             "infinite":true,
               "autoplay": true,
@@ -56,13 +53,13 @@
             </div>
             <div class="col-lg-7">
                 <div class="product-details-info pl-lg--30 ">
-  
-                        Tags:
-                        @for (var i = 0; i < Model.Book.BookTags.Count; i++)
-                        {
-                            <a href="">@Model.Book.BookTags[i].Tag.Name</a>
-                            @(i < Model.Book.BookTags.Count - 1 ? "," : "")
-                        }
+
+                    Tags:
+                    @for (var i = 0; i < Model.Book.BookTags.Count; i++)
+                    {
+                        <a href="">@Model.Book.BookTags[i].Tag.Name</a>
+                        @(i < Model.Book.BookTags.Count - 1 ? "," : "")
+                    }
 
                     </p>
                     <h3 class="product-title">@Model.Book.Name</h3>
@@ -150,44 +147,45 @@
                 <div class="tab-pane fade" id="tab-2" role="tabpanel" aria-labelledby="tab2">
                     <div class="review-wrapper">
                         <h2 class="title-lg mb--20">REVIEWS</h2>
-                        @foreach (var review in Model.Book.BookReviews)
-                        {
-                            <div class="review-comment mb--20">
-                                <div class="text">
-                                    <div class="rating-block mb--15">
-                                        @for (int i = 1; i <= 5; i++)
-                                        {
-                                            <span class="ion-android-star-outline @(i<=review.Rate?"star_on":"")"></span>
-                                        }
+                        <div id="reviews-container">
+                            @foreach (var review in Model.Book.BookReviews)
+                            {
+                                <div class="review-comment mb--20">
+                                    <div class="text">
+                                        <div class="rating-block mb--15">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <span class="ion-android-star-outline @(i <= review.Rate ? "star_on" : "")"></span>
+                                            }
+                                        </div>
+                                        <h6 class="author">
+                                            @review?.AppUser?.FullName – <span class="font-weight-400">@review?.CreatedAt.ToString("dd MMMM, yyyy")</span>
+                                        </h6>
+                                        <p>
+                                            @review?.Text
+                                        </p>
                                     </div>
-                                    <h6 class="author">
-                                        @review.AppUser.FullName – <span class="font-weight-400">@review.CreatedAt.ToString("dd MMMM, yyyy")</span>
-                                    </h6>
-                                    <p>
-                                        @review.Text
-                                    </p>
                                 </div>
-                            </div>
-                        }
+                            }
+                        </div>
                         @if (Model.TotalReviewsCount > Model.Book.BookReviews.Count)
                         {
-                            <div class="text-center"><a href="#" class="readmore" >Read more</a></div>
+                            <div class="text-center"><a href="#" class="readmore">Read more</a></div>
                         }
-                        @if(User.Identity.IsAuthenticated && User.IsInRole("member") && Model.Book.BookReviews.Any(x=>x.AppUserId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value))
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("member") && Model.Book.BookReviews.Any(x => x.AppUserId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value))
                         {
-                            <h3>Your review has sent</h3>  
+                            <h3>Your review has been sent</h3>
                         }
                         else
                         {
                             @Html.Partial("_BookReviewFormPartial", Model.Review)
                         }
-
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
-    
     <section class="">
         <div class="container">
             <div class="section-title section-title--bordered">
@@ -257,6 +255,55 @@
             </div>
         </div>
     </section>
-    <!-- Modal -->
     @Html.Partial("_BookModalPartial");
 </main>
+
+<script>
+    let reviewsContainer = document.getElementById("reviews-container");
+    let readMoreButton = document.querySelector(".readmore");
+    let bookId = @Model.Book.Id;
+    let visibleReviews = 2;
+    function createReviewElement(review) { 
+        let date = new Date(review.createdAt).toLocaleDateString("en-GB", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        });    
+        let ratingStars = Array.from({ length: 5 }, (_, i) => `
+            <span class="ion-android-star-outline ${i < review.rate ? "star_on" : ""}"></span>
+        `).join('');
+        return `
+            <div class="review-comment mb--20">
+                <div class="text">
+                    <div class="rating-block mb--15">
+                        ${ratingStars}
+                    </div>
+                    <h6 class="author">
+                        ${review.appUser.fullName} – <span class="font-weight-400">${date}</span>
+                    </h6>
+                    <p>${review.text}</p>
+                </div>
+            </div>
+        `;
+    } 
+    function loadMoreReviews() {
+        fetch(`/book/GetMoreReviews?bookId=${bookId}&skip=${visibleReviews}&take=2`)
+            .then(response => response.json())
+            .then(data => {
+            
+                data.forEach(review => {
+                    let reviewElement = createReviewElement(review);
+                    reviewsContainer.appendChild(document.createRange().createContextualFragment(reviewElement));
+                });    
+                visibleReviews += data.length;     
+                if (data.length < 2) {
+                    readMoreButton.style.display = "none";
+                }
+            })
+            .catch(error => console.error('some error:', error));
+    }
+    readMoreButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        loadMoreReviews();
+    });
+</script>
