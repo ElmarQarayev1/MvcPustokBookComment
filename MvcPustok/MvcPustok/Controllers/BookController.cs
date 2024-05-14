@@ -110,8 +110,7 @@ namespace MvcPustok.Controllers
                 .Take(2)
                 .ToListAsync();
 
-            bookDetail.AvgRate = bookDetail.TotalReviewsCount > 0
-                ? (int)Math.Ceiling(await _context.BookReviews.Where(x => x.BookId == bookId).AverageAsync(x => x.Rate)) : 0;
+            bookDetail.AvgRate = bookDetail.TotalReviewsCount > 0 ? (int)Math.Ceiling(await _context.BookReviews.Where(x => x.BookId == bookId).AverageAsync(x => x.Rate)) : 0;
 
             return bookDetail;
         }
@@ -126,7 +125,5 @@ namespace MvcPustok.Controllers
                 .ToListAsync();
             return Json(reviews);
         }
-
-
     }
 }

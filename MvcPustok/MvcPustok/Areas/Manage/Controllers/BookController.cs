@@ -7,6 +7,7 @@ using MvcPustok.Areas.Manage.ViewModels;
 using MvcPustok.Data;
 using MvcPustok.Helpers;
 using MvcPustok.Models;
+using System.Net;
 
 namespace MvcPustok.Areas.Manage.Controllers
 {
@@ -47,7 +48,9 @@ namespace MvcPustok.Areas.Manage.Controllers
 
         public IActionResult Index(int page = 1)
         {
-            var query = _context.Books.Include(x => x.Author).Include(x => x.Genre).Include(x => x.BookImages.Where(x => x.Status == true)).Where(x=>!x.IsDeleted).Include(x=>x.BookTags).ThenInclude(x=>x.Tag).OrderByDescending(x => x.Id);
+            var query = _context.Books.Include(x => x.Author).Include(x => x.Genre).Include(x => x.BookImages.
+            Where(x => x.Status == true)).Where(x=>!x.IsDeleted).Include(x=>x.BookReviews).Include(x=>x.BookTags).
+            ThenInclude(x=>x.Tag).OrderByDescending(x => x.Id);
             return View(PaginatedList<Book>.Create(query,page,3));
         }
 
@@ -128,7 +131,7 @@ namespace MvcPustok.Areas.Manage.Controllers
             return RedirectToAction("index");           
         }
         public IActionResult Edit(int id)
-        {
+       {
             Book book = _context.Books.Include(x => x.BookImages).Include(x => x.BookTags).FirstOrDefault(x => x.Id == id);
             if (book == null)
             {
@@ -232,6 +235,20 @@ namespace MvcPustok.Areas.Manage.Controllers
             existBook.ModifiedAt = DateTime.UtcNow;
             _context.SaveChanges();
             return RedirectToAction("index");
+        }
+
+        public async Task<IActionResult> Review(int id)
+        {
+            var book = await _context.Books
+                                     .Include(b => b.BookReviews).ThenInclude(x=>x.AppUser)
+                                     .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (book == null)
+            {
+                return RedirectToAction("notfound", "error");
+            }
+
+            return View(book);
         }
 
     }

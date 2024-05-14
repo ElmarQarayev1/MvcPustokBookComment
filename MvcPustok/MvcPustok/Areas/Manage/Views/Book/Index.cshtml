@@ -24,13 +24,13 @@
                         <th scope="col">Author</th>
                         <th scope="col">Genre</th>
                         <th scope="col">Desc</th>
-                        <th scope="col">SalePrice</th>
-                        <th scope="col">CostPrice</th>
-                        <th scope="col">Discount</th>
-
+                        <th scope="col">SP</th>
+                        <th scope="col">CP</th>
+                        <th scope="col">DP</th>
+                       
                         <th scope="col">Tags</th>
-                        <th scope="col">BookImg</th>
-                        <th scope="col">Action</th>
+                        <th scope="col">BImg</th>
+                        <th scope="col">Act</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,7 +45,7 @@
                             <td>@item.SalePrice.ToString("0.00")</td>
                             <td>@item.CostPrice.ToString("0.00")</td>
                             <td>@item.DiscountPercent.ToString("0.##")%</td>
-
+                            
                             <td>
                                 <ul class="tag-list">
                                     @foreach (var bookTag in item.BookTags)
@@ -60,6 +60,7 @@
                             <td>
                                 <a class="btn btn-warning" asp-action="edit" asp-route-id="@item.Id">Edit</a>
                                 <a class="btn btn-danger" asp-action="delete" asp-route-id="@item.Id">Delete</a>
+                                <a class="btn btn-success" asp-action="review" asp-route-id="@item.Id">Review</a>
                             </td>
                         </tr>
                     }
@@ -67,7 +68,6 @@
             </table>
             <nav aria-label="..." class="d-flex justify-content-center">
                 <ul class="pagination">
-
                     @if (Model.PageIndex > 1)
                     {
                         <li class="page-item">

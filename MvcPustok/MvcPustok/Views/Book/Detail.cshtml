@@ -7,7 +7,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                    <li class="breadcrumb-item active">Product Details</li>
+                    <li class="breadcrumb-item active">Book Details</li>
                 </ol>
             </nav>
         </div>
@@ -250,14 +250,12 @@
                             </div>
                         </div>
                     </div>
-
                 }
             </div>
         </div>
     </section>
     @Html.Partial("_BookModalPartial");
 </main>
-
 <script>
     let reviewsContainer = document.getElementById("reviews-container");
     let readMoreButton = document.querySelector(".readmore");
@@ -285,7 +283,7 @@
                 </div>
             </div>
         `;
-    } 
+    }
     function loadMoreReviews() {
         fetch(`/book/GetMoreReviews?bookId=${bookId}&skip=${visibleReviews}&take=2`)
             .then(response => response.json())

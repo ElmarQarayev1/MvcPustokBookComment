@@ -65,23 +65,31 @@ namespace MvcPustok.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(MemberLoginViewModel member, string returnUrl)
         {
-          
-;            AppUser appUser = await _userManager.FindByEmailAsync(member.Email);
-
-            if (appUser == null || !await _userManager.IsInRoleAsync(appUser,"member"))
+            if (member.Password == null)
             {
-                ModelState.AddModelError("", "Email Or Password is not true");
-                return View();
+                ModelState.AddModelError("Password", "Password mustn't be null");
+                return View(member);
             }
+
+            AppUser appUser = await _userManager.FindByEmailAsync(member.Email);
+
+            if (appUser == null || !await _userManager.IsInRoleAsync(appUser, "member"))
+            {
+                ModelState.AddModelError("", "Email or Password is incorrect");
+                return View(member);
+            }
+
             var result = await _signInManager.PasswordSignInAsync(appUser, member.Password, false, true);
 
             if (!result.Succeeded)
             {
                 ModelState.AddModelError("", "Email or Password is incorrect");
-                return View();
+                return View(member);
             }
+
             return returnUrl != null ? Redirect(returnUrl) : RedirectToAction("index", "home");
         }
+
         [Authorize(Roles ="member")]
         public async Task<IActionResult> Logout()
         {
@@ -108,7 +116,6 @@ namespace MvcPustok.Controllers
                     UserName=user.UserName,
                     Email=user.Email
                 }
-
             };
             ViewBag.Tab = tab;
             return View(profileViewModel);
@@ -164,10 +171,7 @@ namespace MvcPustok.Controllers
             return View(profileViewModel);
 
         }
-        //public IActionResult Wishlist()
-        //{
-        //    return View();
-        //}
+       
     }
 }
 
